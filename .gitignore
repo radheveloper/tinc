@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+dist/
+build/
+*.spec.bak
+.tinc/
+.tincignore
+venv/
+.env
+.DS_Store

@@ -1,0 +1,76 @@
+# .github/workflows/build.yml
+name: Build TINC
+
+on:
+  push:
+    tags:
+      - 'v*'   # v1.0.0, v0.1.2...
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Instalar dependencias del sistema (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libglib2.0-0 libgl1 libegl1 libxcb-cursor0
+          sudo apt-get install -y libxcb-icccm4 libxcb-image0 libxcb-keysyms1
+          sudo apt-get install -y libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxkbcommon-x11-0
+
+      - name: Compilar con PyInstaller
+        run: pyinstaller tinc.spec
+
+      - name: Empaquetar Linux
+        if: runner.os == 'Linux'
+        run: |
+          cd dist
+          tar czf TINC-linux.tar.gz TINC/
+
+      - name: Empaquetar Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist/TINC -DestinationPath dist/TINC-windows.zip
+
+      - name: Empaquetar macOS
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          zip -r TINC-macos.zip TINC/
+
+      # Cada runner sube SOLO su archivo — softprops actualiza el mismo release
+      - name: Subir a Release (Linux)
+        if: runner.os == 'Linux'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/TINC-linux.tar.gz
+
+      - name: Subir a Release (Windows)
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/TINC-windows.zip
+
+      - name: Subir a Release (macOS)
+        if: runner.os == 'macOS'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/TINC-macos.zip

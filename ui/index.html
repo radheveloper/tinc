@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TINC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">λ TINC</div>
+      <div class="brand-actions">
+        <button class="btn-projects" onclick="App.toggleProjects()" title="Projects">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </button>
+        <button class="btn-settings" onclick="App.toggleSettings()" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .66.39 1.26 1 1.51H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="projectsDropdown" class="modal hidden" onclick="if(event.target===this)App.toggleProjects()">
+      <div class="modal-box" style="max-width:380px">
+        <div class="modal-head">
+          <span>Projects</span>
+          <button onclick="App.toggleProjects()">✕</button>
+        </div>
+        <div id="recentList" class="recent-list" style="padding:8px;max-height:320px"></div>
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn-header" onclick="App.toggleProjects()">Cancel</button>
+          <button onclick="App.openProject()" style="background:var(--accent);color:#000;border:none;padding:6px 14px;border-radius:5px;font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+            Open Project
+          </button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="file-controls">
+      <button onclick="App.selectAll()">All</button>
+      <button onclick="App.selectNone()">None</button>
+    </div>
+    <div id="fileList" class="file-list"></div>
+    <div class="action-buttons">
+      <button class="btn-context" onclick="App.copyContext()" title="Copy context of selected files">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy context
+      </button>
+      <button class="btn-folder" onclick="App.openFolder()" title="Open containing folder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="header-left">
+        <span class="dot"></span>
+        <span id="projectName">No project</span>
+      </div>
+      <div class="header-right">
+        <button class="btn-header" onclick="App.clearChat()">Clear Chat</button>
+        <button class="btn-header" onclick="App.showHistory()">History</button>
+      </div>
+    </header>
+
+    <div id="chatFeed" class="chat-feed"></div>
+
+    <div class="input-zone">
+      <div class="input-wrap" id="inputWrap">
+        <div id="modeLabel" class="mode-label">✦ Instruction for the AI</div>
+        <div class="input-box">
+          <textarea id="mainInput" placeholder="Describe what you want to do..." rows="1" disabled></textarea>
+          <button id="btnSend" class="btn-send" onclick="App.handleSend()" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="conflictModal" class="modal hidden" onclick="if(event.target===this)ConflictResolver.cancelAll()">
+    <div class="modal-box conflict-box">
+      <div class="modal-head">
+        <div>
+          <span style="color:var(--red);margin-right:8px">⚠</span>
+          <span id="conflictCounter" style="font-weight:700">Conflict 1 of 1</span>
+          <span style="margin-left:10px;font-size:12px;color:var(--muted)">Search text not found in</span>
+          <code id="conflictFile" style="font-size:12px;color:var(--accent);margin-left:4px"></code>
+        </div>
+        <button onclick="ConflictResolver.cancelAll()">✕</button>
+      </div>
+      <div style="padding:10px 16px;font-size:12px;color:#888;border-bottom:1px solid var(--border)">
+        Select the closest match to use as replacement target, or cancel to abort all changes.
+      </div>
+      <div id="conflictSearchWrap" style="padding:12px 16px; border-bottom:1px solid var(--border); background:#0a0a0a">
+        <div style="font-size:11px; color:var(--muted); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em">AI wanted to replace:</div>
+        <pre id="conflictSearchText" style="font-family:var(--mono); font-size:11px; color:#ef4444; background:#1a0000; padding:8px; border-radius:4px; border:1px solid #3a0000; white-space:pre-wrap; margin:0; line-height:1.4; max-height:120px; overflow:auto"></pre>
+      </div>
+      <div id="conflictCandidates" class="conflict-candidates"></div>
+      <div class="conflict-footer">
+        <button class="btn-header" onclick="ConflictResolver.cancelAll()">Cancel all changes</button>
+        <button id="btnUseCandidate" onclick="ConflictResolver.applySelected()" disabled
+          style="background:var(--accent);color:#000;border:none;padding:6px 18px;border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;opacity:0.4;transition:opacity 0.2s"
+          onmouseenter="if(!this.disabled)this.style.opacity=0.8" onmouseleave="if(!this.disabled)this.style.opacity=1">
+          Use selected ›
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal hidden" onclick="if(event.target===this)App.closeConfirm(false)">
+    <div class="modal-box" style="max-width:350px">
+      <div class="modal-head">
+        <span>Clear Chat</span>
+        <button onclick="App.closeConfirm(false)">✕</button>
+      </div>
+      <div style="padding:20px 16px; font-size:14px; color:var(--text); line-height:1.5">
+        Are you sure you want to clear the current chat? This action cannot be undone.
+      </div>
+      <div style="padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end">
+        <button class="btn-header" onclick="App.closeConfirm(false)">Cancel</button>
+        <button onclick="App.closeConfirm(true)" style="background:var(--red); color:#fff; border:none; padding:6px 14px; border-radius:5px; font-weight:600; font-size:13px; cursor:pointer">
+          Clear Chat
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="undoModal" class="modal hidden" style="z-index: 200;" onclick="if(event.target===this)App.closeUndoConfirm(false)">
+    <div class="modal-box" style="max-width:380px">
+      <div class="modal-head">
+        <span>Undo Changes</span>
+        <button onclick="App.closeUndoConfirm(false)">✕</button>
+      </div>
+      <div style="padding:20px 16px; font-size:14px; color:var(--text); line-height:1.5">
+        Undo up to:<br>
+        <span id="undoPromptText" style="color:var(--accent);font-weight:500;display:block;margin-top:6px;word-break:break-word"></span>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">This will revert all subsequent changes.</div>
+      </div>
+      <div style="padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end">
+        <button class="btn-header" onclick="App.closeUndoConfirm(false)">Cancel</button>
+        <button onclick="App.closeUndoConfirm(true)" style="background:var(--red); color:#fff; border:none; padding:6px 14px; border-radius:5px; font-weight:600; font-size:13px; cursor:pointer">
+          Undo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal hidden" onclick="if(event.target===this)App.toggleSettings()">
+    <div class="modal-box" style="max-width:400px">
+      <div class="modal-head">
+        <span>Settings</span>
+        <button onclick="App.toggleSettings()">✕</button>
+      </div>
+      <div class="modal-body" style="padding:16px">
+        <div class="setting-item">
+          <div class="setting-label">
+            <span>Theme</span>
+            <span class="setting-desc">Toggle dark/light mode</span>
+          </div>
+          <label class="theme-toggle">
+            <input type="checkbox" id="themeSwitch" onchange="App.toggleTheme()">
+            <span class="toggle-slider">
+              <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+            </span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <span>Auto-copy Prompts</span>
+            <span class="setting-desc">Automatically copy the generated prompt to clipboard</span>
+          </div>
+          <label class="theme-toggle">
+            <input type="checkbox" id="autoCopySwitch" onchange="App.toggleAutoCopy()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span>Change History</span>
+        <button onclick="$('historyModal').classList.add('hidden')">✕</button>
+      </div>
+      <div id="historyList" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

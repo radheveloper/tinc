@@ -1,0 +1,5 @@
+pywebview>=4.0
+qtpy>=2.0
+PyQt5>=5.15
+PyQtWebEngine>=5.15
+tiktoken

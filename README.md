@@ -2,7 +2,7 @@
 
 > A local desktop vibe-coding agent that bridges your codebase with any external AI (Claude, ChatGPT, Gemini…) — no subscriptions, no plugins, no IDE lock-in.
 
----
+
 
 ## What is TINC?
 
@@ -10,7 +10,7 @@ TINC is a lightweight desktop app that turns any AI chat into a surgical code ed
 
 No API keys. No monthly fees. Works with any AI.
 
----
+
 
 ## How it works
 
@@ -32,7 +32,6 @@ Your project files
 
 TINC does **not** call any AI API itself. That's the point — you control which AI you use, which model, which account.
 
----
 
 ## Download
 
@@ -44,7 +43,6 @@ TINC does **not** call any AI API itself. That's the point — you control which
    
 No installation needed. Unzip and run.
 
----
 
 ## Features
 
@@ -56,7 +54,6 @@ No installation needed. Unzip and run.
 - **Auto-copy prompts** — the generated prompt goes straight to your clipboard.
 - **Dark / light mode** — adapts to your preference.
 
----
 
 ## Running from source
 
@@ -71,7 +68,6 @@ python main.py
 
 > On Linux you may also need: `sudo apt install libglib2.0-0 libgl1 libegl1 libxcb-cursor0`
 
----
 
 ## Usage
 
@@ -84,7 +80,6 @@ python main.py
 7. **Review and apply** — TINC shows you every change before applying. If there are conflicts, it walks you through them.
 8. **Undo if needed** — the History panel shows every apply with an Undo button that reverts via git.
 
----
 
 ## Building from source
 

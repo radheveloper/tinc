@@ -14,7 +14,7 @@ No API keys. No monthly fees. Works with any AI.
 
 ## How it works
 
-![](https://github.com/user-attachments/assets/502840b1-f3cc-4356-9283-6c92445eee2b)
+https://github.com/user-attachments/assets/502840b1-f3cc-4356-9283-6c92445eee2b
 
 ```
 Your project files

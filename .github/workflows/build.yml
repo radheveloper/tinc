@@ -4,7 +4,7 @@ name: Build TINC
 on:
   push:
     tags:
-      - 'v*'   # v1.0.0, v0.1.2...
+      - 'v*'
 
 permissions:
   contents: write
@@ -13,7 +13,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-20.04, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -56,7 +56,7 @@ jobs:
           cd dist
           zip -r TINC-macos.zip TINC/
 
-      # Cada runner sube SOLO su archivo — softprops actualiza el mismo release
+    
       - name: Subir a Release (Linux)
         if: runner.os == 'Linux'
         uses: softprops/action-gh-release@v2
